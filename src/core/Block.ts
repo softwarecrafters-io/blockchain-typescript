@@ -32,7 +32,12 @@ export class Block{
 	}
 
 	private static generateHash(timestamp:string, previousHash: string, data:any){
-		return SHA256(timestamp, previousHash, data).toString()
+		return SHA256(`${timestamp}${previousHash}${data}`).toString()
+	}
+
+	hasValidHash(){
+		const validHash = Block.generateHash(this.timestamp, this.previousBlockHash, this.data).toString()
+		return this.hash === validHash;
 	}
 
 	isGenesis(){

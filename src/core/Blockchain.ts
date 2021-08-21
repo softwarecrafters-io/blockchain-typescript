@@ -19,9 +19,13 @@ export class BlockChain{
 
 	concatBlock(block:Block){
 		if(!block.isEqualsToPreviousHash(this.getLast().hash)){
-			throw 'a block with not valid previous hash is not allowed'
+			throw 'a block with invalid previous hash is not allowed'
 		}
 		return BlockChain.create(this.blocks.concat(block))
+	}
+
+	synchronize(blockChain:BlockChain){
+
 	}
 
 	getLast(){
