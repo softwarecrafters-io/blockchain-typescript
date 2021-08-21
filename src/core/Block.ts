@@ -39,6 +39,10 @@ export class Block{
 		return !this.previousBlockHash;
 	}
 
+	isEqualsToPreviousHash(hash:string){
+		return this.previousBlockHash === hash
+	}
+
 	toString(){
 		return `Block - timestamp: ${this.timestamp} previousHash: ${this.previousBlockHash} currentHash: ${this.hash} data: ${this.data}`
 	}

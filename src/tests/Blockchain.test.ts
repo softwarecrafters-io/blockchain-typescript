@@ -14,4 +14,10 @@ describe('The Blockchain', ()=>{
 
 		expect(blockChain.getLastBlock().hash).toBe(block.hash)
 	})
+	it('does not allow adding a block if it does not link to the previous block', ()=>{
+		const blockChain = BlockChain.create('0');
+		const block = Block.createFrom('0', 'unlinked_hash', 'irrelevant-data' )
+
+		expect(()=>blockChain.add(block)).toThrow('a block with not valid previous hash is not allowed')
+	})
 })

@@ -8,6 +8,9 @@ export class BlockChain{
 	}
 
 	add(block:Block){
+		if(!block.isEqualsToPreviousHash(this.getLastBlock().hash)){
+			throw 'a block with not valid previous hash is not allowed'
+		}
 		this.blocks = this.blocks.concat(block)
 	}
 
