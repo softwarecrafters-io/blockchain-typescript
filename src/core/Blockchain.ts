@@ -17,22 +17,36 @@ export class BlockChain{
 		return new BlockChain([Block.createGenesisFrom(timestamp, 'genesis block')])
 	}
 
+	static createFromAnother(blockChain: BlockChain){
+		return new BlockChain(blockChain.blocks)
+	}
+
 	concatBlock(block:Block){
-		if(!block.isEqualsToPreviousHash(this.getLast().hash)){
+		if(!block.isEqualsToPreviousHash(this.getLastBlock().hash)){
 			throw 'a block with invalid previous hash is not allowed'
 		}
 		return BlockChain.create(this.blocks.concat(block))
 	}
 
 	synchronize(blockChain:BlockChain){
-
+		if(blockChain.length() > this.length())
+			return BlockChain.createFromAnother(blockChain)
+		return BlockChain.createFromAnother(this)
 	}
 
-	getLast(){
+	hasIntegrity(){
+		
+	}
+
+	getLastBlock(){
 		return this.blocks[this.blocks.length -1]
 	}
 
-	getAll(){
+	getAllBlocks(){
 		return this.blocks;
+	}
+
+	length(){
+		return this.blocks.length;
 	}
 }
