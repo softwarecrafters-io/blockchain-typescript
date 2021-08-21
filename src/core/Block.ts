@@ -36,14 +36,10 @@ export class Block{
 	}
 
 	isGenesis(){
-		return this.previousBlockHash === '';
+		return !this.previousBlockHash;
 	}
 
 	toString(){
-		return `Block - 
-			timestamp: ${this.timestamp}
-			previousHash: ${this.previousBlockHash}
-			currentHash: ${this.hash}
-			data: ${this.data}`
+		return `Block - timestamp: ${this.timestamp} previousHash: ${this.previousBlockHash} currentHash: ${this.hash} data: ${this.data}`
 	}
 }
