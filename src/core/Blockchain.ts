@@ -1,20 +1,34 @@
 import { Block } from './Block';
 
 export class BlockChain{
-	constructor(private blocks: ReadonlyArray<Block>) {}
+	private constructor(private readonly blocks: ReadonlyArray<Block>) {}
 
-	static create(timestamp:string){
+	static create(blocks: ReadonlyArray<Block>){
+		if(blocks.length < 1){
+			throw 'an empty list of blocks is not allowed';
+		}
+		if(!blocks[0].isGenesis()){
+			throw 'a list without a valid genesis block is not allowed'
+		}
+		return new BlockChain(blocks)
+	}
+
+	static createFrom(timestamp:string){
 		return new BlockChain([Block.createGenesisFrom(timestamp, 'genesis block')])
 	}
 
-	add(block:Block){
-		if(!block.isEqualsToPreviousHash(this.getLastBlock().hash)){
+	concatBlock(block:Block){
+		if(!block.isEqualsToPreviousHash(this.getLast().hash)){
 			throw 'a block with not valid previous hash is not allowed'
 		}
-		this.blocks = this.blocks.concat(block)
+		return BlockChain.create(this.blocks.concat(block))
 	}
 
-	getLastBlock(){
+	getLast(){
 		return this.blocks[this.blocks.length -1]
+	}
+
+	getAll(){
+		return this.blocks;
 	}
 }
