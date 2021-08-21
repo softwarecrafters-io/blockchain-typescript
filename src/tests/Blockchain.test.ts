@@ -14,28 +14,32 @@ describe('The Blockchain', ()=>{
 	})
 
 	it('creates a blockchain with a list of blocks with invalid genesis block is not allowed', ()=>{
-		expect(()=> BlockChain.create([Block.createFrom('0', 'no-genesis', 'irrelevant-data')])).toThrow()
+		const noGenesisBlock = Block.createGenesisFrom('0', 'irrelevant-data');
+		(noGenesisBlock as any).previousBlockHash = 'no-genesis'
+		expect(()=> BlockChain.create([noGenesisBlock])).toThrow()
 	})
 
 	it('concatenates a new block that includes previous hash', ()=>{
 		const blockChain = BlockChain.createFrom('0');
-		const block = Block.createFrom('0', blockChain.getLastBlock().hash, 'irrelevant-data' )
+		const block = Block.createFrom('0', blockChain.getLastBlock(), 'irrelevant-data' )
 
 		const newBlockChain = blockChain.concatBlock(block)
 
-		expect(newBlockChain.getLastBlock().hash).toBe(block.hash)
+		expect(newBlockChain.getLastBlock().isEquals(block)).toBeTruthy()
 	})
 
 	it('does not allow adding a block if it does not link to the previous block', ()=>{
 		const blockChain = BlockChain.createFrom('0');
-		const block = Block.createFrom('0', 'unlinked_hash', 'irrelevant-data' )
+		const unlinkedBlock = blockChain.getLastBlock().clone();
+		(unlinkedBlock as any).hash = 'unlinked_hash';
+		const block = Block.createFrom('0', unlinkedBlock, 'irrelevant-data' )
 		expect(()=>blockChain.concatBlock(block)).toThrow()
 	});
 
 	it('synchronizes with another blockchain by taking the blockchain with more valid blocks given', ()=>{
 		const genesisBlock = Block.createGenesisFrom('0', 'data');
 		const blockChain = BlockChain.create([genesisBlock]);
-		const anotherBlockChain = BlockChain.create([genesisBlock, Block.createFrom('1', genesisBlock.hash, 'more data')]);
+		const anotherBlockChain = BlockChain.create([genesisBlock, Block.createFrom('1', genesisBlock, 'more data')]);
 
 		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain)
 
@@ -44,7 +48,7 @@ describe('The Blockchain', ()=>{
 
 	it('does not synchronize with another blockchain that has less blocks', ()=>{
 		const genesisBlock = Block.createGenesisFrom('0', 'data');
-		const blockChain = BlockChain.create([genesisBlock, Block.createFrom('1', genesisBlock.hash, 'more data')]);
+		const blockChain = BlockChain.create([genesisBlock, Block.createFrom('1', genesisBlock, 'more data')]);
 		const anotherBlockChain = BlockChain.create([genesisBlock]);
 
 		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain)
@@ -56,11 +60,24 @@ describe('The Blockchain', ()=>{
 		const genesisBlock = Block.createGenesisFrom('0', 'data');
 		const invalidGenesisBlock = Block.createGenesisFrom('1', 'data');
 		const blockChain = BlockChain.create([genesisBlock]);
-		const anotherBlockChain = BlockChain.create([invalidGenesisBlock, Block.createFrom('1', invalidGenesisBlock.hash, 'more data')]);
+		const anotherBlockChain = BlockChain.create([invalidGenesisBlock, Block.createFrom('1', invalidGenesisBlock, 'more data')]);
 
 		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain)
 
 		expect(blockChainSynchronized).toEqual(blockChain)
 	})
 
+	it('does not synchronize with another blockchain that has a manipulated block', ()=>{
+		const genesisBlock = Block.createGenesisFrom('0', 'data');
+		const secondBlock = Block.createFrom('1', genesisBlock, 'more data');
+		const blockChain = BlockChain.create([genesisBlock, secondBlock]);
+		const manipulatedBlock = secondBlock.clone();
+		(manipulatedBlock as any).data = 'manipulated data';
+		const thirdBlock = Block.createFrom('1', secondBlock, 'more data...');
+		const anotherBlockChain = BlockChain.create([genesisBlock, manipulatedBlock, thirdBlock]);
+
+		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain)
+
+		expect(blockChainSynchronized).toEqual(blockChain)
+	})
 })

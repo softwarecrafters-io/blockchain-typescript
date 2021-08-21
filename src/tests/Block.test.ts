@@ -5,27 +5,31 @@ describe('The Block', ()=>{
 		expect(Block.createGenesisFrom('0', 'irrelevant-data').isGenesis()).toBeTruthy()
 	})
 
-	it('creates a new block with a valid SHA256 hash', ()=>{
-		const block = Block.createFrom('0', 'irrelevant-hash', 'irrelevant-data');
-
-		expect(block.hash.length).toBe(64)
-		expect(block.hash).toBe('14ade5300710bd577b067446b496bd1abea6af5529a994a39e3403172a46d6f9')
-	})
+	// it('creates a new block with a valid SHA256 hash', ()=>{
+	// 	const genesisBlock = Block.createGenesisFrom('0', 'irrelevant-data')
+	// 	const block = Block.createFrom('0', genesisBlock, 'irrelevant-data');
+	//
+	// 	expect(block.hash.length).toBe(64)
+	// 	expect(block.hash).toBe('8382db6b96b816a1300093f6533efe358a93a52cf4654dca7f071d27d74b4087')
+	// })
 
 	it('creates a new block with a valid information', ()=>{
-		const block = Block.createFrom('0', 'irrelevant-hash', 'irrelevant-data');
+		const genesisBlock = Block.createGenesisFrom('0', 'irrelevant-data')
+		const block = Block.createFrom('0', genesisBlock, 'irrelevant-data');
 
-		expect(block.toString()).toBe('Block - timestamp: 0 previousHash: irrelevant-hash currentHash: 14ade5300710bd577b067446b496bd1abea6af5529a994a39e3403172a46d6f9 data: irrelevant-data')
+		expect(block.toString()).toBe('Block - timestamp: 0 previousHash: aacc381f30af91b8c0a5a676e190e296262d0d8d33043a7ff682031ec2aae9c4 currentHash: 8382db6b96b816a1300093f6533efe358a93a52cf4654dca7f071d27d74b4087 data: irrelevant-data')
 	})
 
 	it('evaluates if the block has a valid hash', ()=>{
-		const block = Block.createFrom('0', 'irrelevant-hash', 'irrelevant-data');
+		const genesisBlock = Block.createGenesisFrom('0', 'irrelevant-data')
+		const block = Block.createFrom('0', genesisBlock, 'irrelevant-data');
 
 		expect(block.hasValidHash()).toBeTruthy()
 	})
 
 	it('a manipulated block has an invalid hash', ()=>{
-		const manipulatedBlock = Block.createFrom('0', 'irrelevant-hash', 'irrelevant-data');
+		const genesisBlock = Block.createGenesisFrom('0', 'irrelevant-data')
+		const manipulatedBlock = Block.createFrom('0', genesisBlock, 'irrelevant-data');
 		(manipulatedBlock as any).data = 'manipulated data...';
 
 		expect(manipulatedBlock.hasValidHash()).toBeFalsy()

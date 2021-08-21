@@ -10,7 +10,7 @@ export type BlockProperties ={
 export class Block{
 	private readonly timestamp:string;
 	private readonly previousBlockHash: string;
-	readonly hash: string;
+	private readonly hash: string;
 	private readonly data: any;
 
 	private constructor(properties: BlockProperties) {
@@ -20,9 +20,9 @@ export class Block{
 		this.data = properties.data
 	}
 
-	static createFrom(timestamp:string, previousHash: string, data:any){
-		const currentHash = Block.generateHash(timestamp, previousHash, data)
-		return new Block({ timestamp, previousBlockHash: previousHash, hash: currentHash, data })
+	static createFrom(timestamp:string, previousBlock: Block, data:any){
+		const currentHash = Block.generateHash(timestamp, previousBlock.hash, data)
+		return new Block({ timestamp, previousBlockHash: previousBlock.hash, hash: currentHash, data })
 	}
 
 	static createGenesisFrom(timestamp:string, data:any){
@@ -44,8 +44,8 @@ export class Block{
 		return !this.previousBlockHash;
 	}
 
-	isEqualsToPreviousHash(hash:string){
-		return this.previousBlockHash === hash
+	isPreviousBlock(block){
+		return block.hash === this.previousBlockHash;
 	}
 
 	isEquals(block:Block){
@@ -54,5 +54,9 @@ export class Block{
 
 	toString(){
 		return `Block - timestamp: ${this.timestamp} previousHash: ${this.previousBlockHash} currentHash: ${this.hash} data: ${this.data}`
+	}
+
+	clone(){
+		return new Block({ timestamp: this.timestamp, data:this.data, hash: this.hash, previousBlockHash: this.previousBlockHash})
 	}
 }

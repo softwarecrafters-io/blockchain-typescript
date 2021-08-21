@@ -22,7 +22,7 @@ export class BlockChain{
 	}
 
 	concatBlock(block:Block){
-		if(!block.isEqualsToPreviousHash(this.getLastBlock().hash)){
+		if(!block.isPreviousBlock(this.getLastBlock())){
 			throw 'a block with invalid previous hash is not allowed'
 		}
 		return BlockChain.create(this.blocks.concat(block))
@@ -38,11 +38,13 @@ export class BlockChain{
 
 	private hasIntegrity(blockChain:BlockChain){
 		const hasEqualsGenesisBlock = this.getGenesisBlock().isEquals(blockChain.getGenesisBlock())
-		const hasAllValidBlocks = blockChain.blocks
+		const containsAllBlocksWithValidHash = blockChain.blocks
 			.map(block => block.hasValidHash())
 			.reduce((previous, current) => previous && current, true);
+		const containsAllBlocksWithValidPreviousHash = blockChain.getBlocksWithoutGenesis()
+			.map((block, index) => block.isPreviousBlock(blockChain.blocks[index]))
 
-		return hasEqualsGenesisBlock
+		return hasEqualsGenesisBlock && containsAllBlocksWithValidHash
 	}
 
 	getGenesisBlock(){
