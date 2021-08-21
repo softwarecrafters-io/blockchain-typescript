@@ -1,48 +1,49 @@
+import {SHA256} from 'crypto-js'
+
 export type BlockProperties ={
 	timestamp:string,
-	previousHash: string,
-	currentHash: string,
+	previousBlockHash: string,
+	hash: string,
 	data: any
 }
 
 export class Block{
 	private readonly timestamp:string;
-	private readonly previousHash: string;
-	private readonly currentHash: string;
+	private readonly previousBlockHash: string;
+	readonly hash: string;
 	private readonly data: any;
 
 	private constructor(properties: BlockProperties) {
 		this.timestamp = properties.timestamp
-		this.previousHash = properties.previousHash
-		this.currentHash = properties.currentHash
+		this.previousBlockHash = properties.previousBlockHash
+		this.hash = properties.hash
 		this.data = properties.data
 	}
 
-	static mine(timestamp:string, previousHash: string, data:any){
+	static createFrom(timestamp:string, previousHash: string, data:any){
 		const currentHash = Block.generateHash(timestamp, previousHash, data)
-		return new Block({ timestamp, previousHash, currentHash, data })
+		return new Block({ timestamp, previousBlockHash: previousHash, hash: currentHash, data })
 	}
 
-	static createGenesis(timestamp:string, data:any){
+	static createGenesisFrom(timestamp:string, data:any){
 		const previousHash = '';
 		const currentHash = Block.generateHash(timestamp, previousHash, data)
-		return new Block({ timestamp, previousHash, currentHash, data })
+		return new Block({ timestamp, previousBlockHash: previousHash, hash: currentHash, data })
 	}
 
 	private static generateHash(timestamp:string, previousHash: string, data:any){
-		return 'hash...'
+		return SHA256(timestamp, previousHash, data).toString()
 	}
 
 	isGenesis(){
-		return this.previousHash === '';
+		return this.previousBlockHash === '';
 	}
 
 	toString(){
 		return `Block - 
 			timestamp: ${this.timestamp}
-			previousHash: ${this.previousHash}
-			currentHash: ${this.currentHash}
+			previousHash: ${this.previousBlockHash}
+			currentHash: ${this.hash}
 			data: ${this.data}`
 	}
-
 }

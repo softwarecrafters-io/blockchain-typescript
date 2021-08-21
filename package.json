@@ -48,5 +48,8 @@
       "npm run compile",
       "git add . "
     ]
+  },
+  "dependencies": {
+    "crypto-js": "^4.1.1"
   }
 }
