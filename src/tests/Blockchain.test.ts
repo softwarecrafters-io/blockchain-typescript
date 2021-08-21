@@ -6,4 +6,12 @@ describe('The Blockchain', ()=>{
 		const blockChain = BlockChain.create('0');
 		expect(blockChain.getLastBlock().isGenesis()).toBeTruthy()
 	})
+	it('adds a new block that includes previous hash', ()=>{
+		const blockChain = BlockChain.create('0');
+		const block = Block.createFrom('0', blockChain.getLastBlock().hash, 'irrelevant-data' )
+
+		blockChain.add(block)
+
+		expect(blockChain.getLastBlock().hash).toBe(block.hash)
+	})
 })

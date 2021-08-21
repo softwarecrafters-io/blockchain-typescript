@@ -1,10 +1,14 @@
 import { Block } from './Block';
 
 export class BlockChain{
-	constructor(private readonly blocks: ReadonlyArray<Block>) {}
+	constructor(private blocks: ReadonlyArray<Block>) {}
 
 	static create(timestamp:string){
 		return new BlockChain([Block.createGenesisFrom(timestamp, 'genesis block')])
+	}
+
+	add(block:Block){
+		this.blocks = this.blocks.concat(block)
 	}
 
 	getLastBlock(){
