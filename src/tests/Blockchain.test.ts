@@ -80,4 +80,18 @@ describe('The Blockchain', ()=>{
 
 		expect(blockChainSynchronized).toEqual(blockChain)
 	})
+
+	it('does not synchronize with another blockchain that has unconnected blocks', ()=>{
+		const genesisBlock = Block.createGenesisFrom('0', 'data');
+		const secondBlock = Block.createFrom('1', genesisBlock, 'more data');
+		const blockChain = BlockChain.create([genesisBlock, secondBlock]);
+		const unconnectedBlock = secondBlock.clone();
+		(unconnectedBlock as any).previousBlockHash = 'unconnected hash';
+		const thirdBlock = Block.createFrom('1', secondBlock, 'more data...');
+		const anotherBlockChain = BlockChain.create([genesisBlock, unconnectedBlock, thirdBlock]);
+
+		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain)
+
+		expect(blockChainSynchronized).toEqual(blockChain)
+	})
 })

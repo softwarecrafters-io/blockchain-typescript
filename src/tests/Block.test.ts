@@ -5,14 +5,6 @@ describe('The Block', ()=>{
 		expect(Block.createGenesisFrom('0', 'irrelevant-data').isGenesis()).toBeTruthy()
 	})
 
-	// it('creates a new block with a valid SHA256 hash', ()=>{
-	// 	const genesisBlock = Block.createGenesisFrom('0', 'irrelevant-data')
-	// 	const block = Block.createFrom('0', genesisBlock, 'irrelevant-data');
-	//
-	// 	expect(block.hash.length).toBe(64)
-	// 	expect(block.hash).toBe('8382db6b96b816a1300093f6533efe358a93a52cf4654dca7f071d27d74b4087')
-	// })
-
 	it('creates a new block with a valid information', ()=>{
 		const genesisBlock = Block.createGenesisFrom('0', 'irrelevant-data')
 		const block = Block.createFrom('0', genesisBlock, 'irrelevant-data');

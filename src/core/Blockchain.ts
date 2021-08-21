@@ -41,10 +41,11 @@ export class BlockChain{
 		const containsAllBlocksWithValidHash = blockChain.blocks
 			.map(block => block.hasValidHash())
 			.reduce((previous, current) => previous && current, true);
-		const containsAllBlocksWithValidPreviousHash = blockChain.getBlocksWithoutGenesis()
+		const containsAllBlocksAreConnectedToPrevious = blockChain.getBlocksWithoutGenesis()
 			.map((block, index) => block.isPreviousBlock(blockChain.blocks[index]))
+			.reduce((previous, current) => previous && current, true);
 
-		return hasEqualsGenesisBlock && containsAllBlocksWithValidHash
+		return hasEqualsGenesisBlock && containsAllBlocksWithValidHash && containsAllBlocksAreConnectedToPrevious
 	}
 
 	getGenesisBlock(){
