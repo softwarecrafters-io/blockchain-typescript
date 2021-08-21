@@ -29,17 +29,33 @@ export class BlockChain{
 	}
 
 	synchronize(blockChain:BlockChain){
-		if(blockChain.length() > this.length())
-			return BlockChain.createFromAnother(blockChain)
-		return BlockChain.createFromAnother(this)
+		const shallKeepCurrent = this.length() >= blockChain.length() || !this.hasIntegrity(blockChain)
+		if (shallKeepCurrent) {
+			return BlockChain.createFromAnother(this);
+		}
+		return BlockChain.createFromAnother(blockChain);
 	}
 
-	hasIntegrity(){
-		
+	private hasIntegrity(blockChain:BlockChain){
+		const hasEqualsGenesisBlock = this.getGenesisBlock().isEquals(blockChain.getGenesisBlock())
+		const hasAllValidBlocks = blockChain.blocks
+			.map(block => block.hasValidHash())
+			.reduce((previous, current) => previous && current, true);
+
+		return hasEqualsGenesisBlock
+	}
+
+	getGenesisBlock(){
+		return this.blocks[0]
 	}
 
 	getLastBlock(){
 		return this.blocks[this.blocks.length -1]
+	}
+
+	getBlocksWithoutGenesis(){
+		const [_, ...remainBlocks] = this.blocks;
+		return remainBlocks;
 	}
 
 	getAllBlocks(){

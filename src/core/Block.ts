@@ -48,6 +48,10 @@ export class Block{
 		return this.previousBlockHash === hash
 	}
 
+	isEquals(block:Block){
+		return this.toString() === block.toString()
+	}
+
 	toString(){
 		return `Block - timestamp: ${this.timestamp} previousHash: ${this.previousBlockHash} currentHash: ${this.hash} data: ${this.data}`
 	}

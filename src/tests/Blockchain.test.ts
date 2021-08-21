@@ -51,4 +51,16 @@ describe('The Blockchain', ()=>{
 
 		expect(blockChainSynchronized).toEqual(blockChain)
 	})
+
+	it('does not synchronize with another blockchain that has invalid genesis block', ()=>{
+		const genesisBlock = Block.createGenesisFrom('0', 'data');
+		const invalidGenesisBlock = Block.createGenesisFrom('1', 'data');
+		const blockChain = BlockChain.create([genesisBlock]);
+		const anotherBlockChain = BlockChain.create([invalidGenesisBlock, Block.createFrom('1', invalidGenesisBlock.hash, 'more data')]);
+
+		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain)
+
+		expect(blockChainSynchronized).toEqual(blockChain)
+	})
+
 })
