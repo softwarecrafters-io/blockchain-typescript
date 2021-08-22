@@ -12,6 +12,8 @@ export type NewBlockProperties = Omit<BlockProperties, 'hash'>
 
 export type NewGenesisBlockProperties = Omit<NewBlockProperties, 'previousBlockHash'>
 
+export type NewBlockFromCandidateProperties = {candidateBlock: Block, timestamp: string, nonce:number}
+
 export class Block{
 	private readonly timestamp:string;
 	private readonly previousBlockHash: string;
@@ -36,6 +38,13 @@ export class Block{
 		const previousBlockHash = '';
 		const hash = Block.generateHash({ previousBlockHash, ...properties })
 		return new Block({ previousBlockHash, hash, ...properties })
+	}
+
+	static createFromCandidate(properties: NewBlockFromCandidateProperties){
+		const {nonce, timestamp} = properties;
+		const {previousBlockHash, transactions} = properties.candidateBlock
+		const hash = Block.generateHash({nonce, timestamp, previousBlockHash, transactions})
+		return new Block({ hash, nonce, timestamp, previousBlockHash, transactions})
 	}
 
 	private static generateHash(properties: NewBlockProperties){
