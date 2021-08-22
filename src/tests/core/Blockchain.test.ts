@@ -1,5 +1,5 @@
-import { Block } from '../core/Block';
-import { BlockChain } from '../core/Blockchain';
+import { Block } from '../../core/Block';
+import { BlockChain } from '../../core/Blockchain';
 
 const context = describe;
 
@@ -67,28 +67,28 @@ describe('The Blockchain', ()=>{
 		expect(blockChainSynchronized).toEqual(blockChain)
 	})
 
-	it('does not synchronize with another blockchain that has a manipulated block', ()=>{
+	it('does not synchronize with another blockchain that has a corrupted block', ()=>{
 		const genesisBlock = Block.createGenesisFrom('0', 'data');
 		const secondBlock = Block.createFrom('1', genesisBlock, 'more data');
 		const blockChain = BlockChain.create([genesisBlock, secondBlock]);
-		const manipulatedBlock = secondBlock.clone();
-		(manipulatedBlock as any).data = 'manipulated data';
+		const corruptedBlock = secondBlock.clone();
+		(corruptedBlock as any).data = 'corrupted data';
 		const thirdBlock = Block.createFrom('1', secondBlock, 'more data...');
-		const anotherBlockChain = BlockChain.create([genesisBlock, manipulatedBlock, thirdBlock]);
+		const anotherBlockChain = BlockChain.create([genesisBlock, corruptedBlock, thirdBlock]);
 
 		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain)
 
 		expect(blockChainSynchronized).toEqual(blockChain)
 	})
 
-	it('does not synchronize with another blockchain that has unconnected blocks', ()=>{
+	it('does not synchronize with another blockchain that has corrupted previous hash in some block', ()=>{
 		const genesisBlock = Block.createGenesisFrom('0', 'data');
 		const secondBlock = Block.createFrom('1', genesisBlock, 'more data');
 		const blockChain = BlockChain.create([genesisBlock, secondBlock]);
-		const unconnectedBlock = secondBlock.clone();
-		(unconnectedBlock as any).previousBlockHash = 'unconnected hash';
+		const blockWithCorruptedPreviousHash = secondBlock.clone();
+		(blockWithCorruptedPreviousHash as any).previousBlockHash = 'corrupted previous hash';
 		const thirdBlock = Block.createFrom('1', secondBlock, 'more data...');
-		const anotherBlockChain = BlockChain.create([genesisBlock, unconnectedBlock, thirdBlock]);
+		const anotherBlockChain = BlockChain.create([genesisBlock, blockWithCorruptedPreviousHash, thirdBlock]);
 
 		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain)
 

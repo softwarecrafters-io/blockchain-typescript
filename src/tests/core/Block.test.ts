@@ -1,4 +1,4 @@
-import { Block } from '../core/Block';
+import { Block } from '../../core/Block';
 
 describe('The Block', ()=>{
 	it('creates a genesis from timestamp and data', ()=>{

@@ -44,7 +44,6 @@ export class BlockChain{
 		const containsAllBlocksAreConnectedToPrevious = blockChain.getBlocksWithoutGenesis()
 			.map((block, index) => block.isPreviousBlock(blockChain.blocks[index]))
 			.reduce((previous, current) => previous && current, true);
-
 		return hasEqualsGenesisBlock && containsAllBlocksWithValidHash && containsAllBlocksAreConnectedToPrevious
 	}
 
