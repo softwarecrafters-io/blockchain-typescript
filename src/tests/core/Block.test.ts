@@ -2,27 +2,34 @@ import { Block } from '../../core/Block';
 
 describe('The Block', ()=>{
 	it('creates a genesis from timestamp and data', ()=>{
-		expect(Block.createGenesisFrom('0', 'irrelevant-data').isGenesis()).toBeTruthy()
+		expect(Block.createGenesisFrom({timestamp:'0', transactions:'irrelevant-data', nonce:0}).isGenesis()).toBeTruthy()
+	})
+
+	it('creates a new block with a valid SHA256 hash', ()=>{
+		const block = Block.createFrom({timestamp:'0', previousBlockHash: 'irrelevant-hash', transactions:'irrelevant-data', nonce:0});
+
+		expect(block.hash.length).toBe(64)
+		expect(block.hash).toBe('fbd10fb55e2f0402bf422925252e9a8cbf45a76b825a1a8c589f77f1bf39f028')
 	})
 
 	it('creates a new block with a valid information', ()=>{
-		const genesisBlock = Block.createGenesisFrom('0', 'irrelevant-data')
-		const block = Block.createFrom('0', genesisBlock, 'irrelevant-data');
+		const genesisBlock = Block.createGenesisFrom({timestamp:'0', transactions:'irrelevant-data', nonce:0})
+		const block = Block.createFrom({timestamp:'0', previousBlockHash:genesisBlock.hash, transactions:'irrelevant-data', nonce:0});
 
-		expect(block.toString()).toBe('Block - timestamp: 0 previousHash: aacc381f30af91b8c0a5a676e190e296262d0d8d33043a7ff682031ec2aae9c4 currentHash: 8382db6b96b816a1300093f6533efe358a93a52cf4654dca7f071d27d74b4087 data: irrelevant-data')
+		expect(block.toString()).toBe('Block - timestamp: 0 nonce: 0 previousHash: 2070ec51d846b3c298ff989abc31c6cded5be390763263441ddf2c67597ba829 currentHash: 07adbffb5d6253b942baa6021a13e4f3026e999f3a9f4aa325adf7eab8107cb5 transactions: irrelevant-data')
 	})
 
 	it('evaluates if the block has a valid hash', ()=>{
-		const genesisBlock = Block.createGenesisFrom('0', 'irrelevant-data')
-		const block = Block.createFrom('0', genesisBlock, 'irrelevant-data');
+		const genesisBlock = Block.createGenesisFrom({timestamp:'0', transactions:'irrelevant-data', nonce:0})
+		const block = Block.createFrom({timestamp:'0', previousBlockHash:genesisBlock.hash, transactions:'irrelevant-data', nonce:0});
 
 		expect(block.hasValidHash()).toBeTruthy()
 	})
 
 	it('a manipulated block has an invalid hash', ()=>{
-		const genesisBlock = Block.createGenesisFrom('0', 'irrelevant-data')
-		const manipulatedBlock = Block.createFrom('0', genesisBlock, 'irrelevant-data');
-		(manipulatedBlock as any).data = 'manipulated data...';
+		const genesisBlock = Block.createGenesisFrom({timestamp:'0', transactions:'irrelevant-data', nonce:0})
+		const manipulatedBlock = Block.createFrom({timestamp:'0', previousBlockHash:genesisBlock.hash, transactions:'irrelevant-data', nonce:0});
+		(manipulatedBlock as any).transactions = 'manipulated transactions...';
 
 		expect(manipulatedBlock.hasValidHash()).toBeFalsy()
 	})

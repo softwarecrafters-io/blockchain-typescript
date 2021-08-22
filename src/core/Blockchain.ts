@@ -14,7 +14,7 @@ export class BlockChain{
 	}
 
 	static createFrom(timestamp:string){
-		return new BlockChain([Block.createGenesisFrom(timestamp, 'genesis block')])
+		return new BlockChain([Block.createGenesisFrom({timestamp:timestamp, transactions:'irrelevant-data', nonce:0})])
 	}
 
 	static createFromAnother(blockChain: BlockChain){

@@ -4,39 +4,48 @@ export type BlockProperties ={
 	timestamp:string,
 	previousBlockHash: string,
 	hash: string,
-	data: any
+	transactions: any,
+	nonce:number
 }
+
+export type NewBlockProperties = Omit<BlockProperties, 'hash'>
+
+export type NewGenesisBlockProperties = Omit<NewBlockProperties, 'previousBlockHash'>
 
 export class Block{
 	private readonly timestamp:string;
 	private readonly previousBlockHash: string;
-	private readonly hash: string;
-	private readonly data: any;
+	readonly hash: string;
+	private readonly transactions: any;
+	private readonly nonce: number;
 
 	private constructor(properties: BlockProperties) {
 		this.timestamp = properties.timestamp
 		this.previousBlockHash = properties.previousBlockHash
 		this.hash = properties.hash
-		this.data = properties.data
+		this.transactions = properties.transactions
+		this.nonce = properties.nonce;
 	}
 
-	static createFrom(timestamp:string, previousBlock: Block, data:any){
-		const currentHash = Block.generateHash(timestamp, previousBlock.hash, data)
-		return new Block({ timestamp, previousBlockHash: previousBlock.hash, hash: currentHash, data })
+	static createFrom(properties: NewBlockProperties){
+		const hash = Block.generateHash({...properties})
+		return new Block({ hash, ...properties})
 	}
 
-	static createGenesisFrom(timestamp:string, data:any){
-		const previousHash = '';
-		const currentHash = Block.generateHash(timestamp, previousHash, data)
-		return new Block({ timestamp, previousBlockHash: previousHash, hash: currentHash, data })
+	static createGenesisFrom(properties: NewGenesisBlockProperties){
+		const previousBlockHash = '';
+		const hash = Block.generateHash({ previousBlockHash, ...properties })
+		return new Block({ previousBlockHash, hash, ...properties })
 	}
 
-	private static generateHash(timestamp:string, previousHash: string, data:any){
-		return SHA256(`${timestamp}${previousHash}${data}`).toString()
+	private static generateHash(properties: NewBlockProperties){
+		const {timestamp, previousBlockHash, transactions, nonce} = properties;
+		return SHA256(`${timestamp}${previousBlockHash}${transactions}${nonce}`).toString()
 	}
 
 	hasValidHash(){
-		const validHash = Block.generateHash(this.timestamp, this.previousBlockHash, this.data).toString()
+		const {timestamp, previousBlockHash, transactions, nonce} = this;
+		const validHash = Block.generateHash( {timestamp, previousBlockHash, transactions, nonce}).toString()
 		return this.hash === validHash;
 	}
 
@@ -53,10 +62,11 @@ export class Block{
 	}
 
 	toString(){
-		return `Block - timestamp: ${this.timestamp} previousHash: ${this.previousBlockHash} currentHash: ${this.hash} data: ${this.data}`
+		return `Block - timestamp: ${this.timestamp} nonce: ${this.nonce} previousHash: ${this.previousBlockHash} currentHash: ${this.hash} transactions: ${this.transactions}`
 	}
 
 	clone(){
-		return new Block({ timestamp: this.timestamp, data:this.data, hash: this.hash, previousBlockHash: this.previousBlockHash})
+		const {timestamp, previousBlockHash, transactions, nonce, hash} = this;
+		return new Block({timestamp, previousBlockHash, transactions, nonce, hash})
 	}
 }

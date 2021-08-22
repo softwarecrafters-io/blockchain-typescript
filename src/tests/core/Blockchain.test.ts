@@ -14,14 +14,14 @@ describe('The Blockchain', ()=>{
 	})
 
 	it('creates a blockchain with a list of blocks with invalid genesis block is not allowed', ()=>{
-		const noGenesisBlock = Block.createGenesisFrom('0', 'irrelevant-data');
+		const noGenesisBlock = Block.createGenesisFrom({timestamp:'0', transactions:'irrelevant-data', nonce:0});
 		(noGenesisBlock as any).previousBlockHash = 'no-genesis'
 		expect(()=> BlockChain.create([noGenesisBlock])).toThrow()
 	})
 
 	it('concatenates a new block that includes previous hash', ()=>{
 		const blockChain = BlockChain.createFrom('0');
-		const block = Block.createFrom('0', blockChain.getLastBlock(), 'irrelevant-data' )
+		const block = Block.createFrom({timestamp:'0', previousBlockHash:blockChain.getLastBlock().hash, transactions:'irrelevant-data', nonce:0} )
 
 		const newBlockChain = blockChain.concatBlock(block)
 
@@ -32,14 +32,14 @@ describe('The Blockchain', ()=>{
 		const blockChain = BlockChain.createFrom('0');
 		const unlinkedBlock = blockChain.getLastBlock().clone();
 		(unlinkedBlock as any).hash = 'unlinked_hash';
-		const block = Block.createFrom('0', unlinkedBlock, 'irrelevant-data' )
+		const block = Block.createFrom({timestamp:'0', previousBlockHash:unlinkedBlock.hash, transactions:'irrelevant-data', nonce:0} )
 		expect(()=>blockChain.concatBlock(block)).toThrow()
 	});
 
 	it('synchronizes with another blockchain by taking the blockchain with more valid blocks given', ()=>{
-		const genesisBlock = Block.createGenesisFrom('0', 'data');
+		const genesisBlock = Block.createGenesisFrom({timestamp:'0', transactions:'irrelevant-data', nonce:0});
 		const blockChain = BlockChain.create([genesisBlock]);
-		const anotherBlockChain = BlockChain.create([genesisBlock, Block.createFrom('1', genesisBlock, 'more data')]);
+		const anotherBlockChain = BlockChain.create([genesisBlock, Block.createFrom({timestamp:'0', previousBlockHash:genesisBlock.hash, transactions:'irrelevant-data', nonce:0} )]);
 
 		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain)
 
@@ -47,8 +47,8 @@ describe('The Blockchain', ()=>{
 	})
 
 	it('does not synchronize with another blockchain that has less blocks', ()=>{
-		const genesisBlock = Block.createGenesisFrom('0', 'data');
-		const blockChain = BlockChain.create([genesisBlock, Block.createFrom('1', genesisBlock, 'more data')]);
+		const genesisBlock = Block.createGenesisFrom({timestamp:'0', transactions:'irrelevant-data', nonce:0});
+		const blockChain = BlockChain.create([genesisBlock, Block.createFrom({timestamp:'0', previousBlockHash:genesisBlock.hash, transactions:'irrelevant-data', nonce:0})]);
 		const anotherBlockChain = BlockChain.create([genesisBlock]);
 
 		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain)
@@ -57,10 +57,10 @@ describe('The Blockchain', ()=>{
 	})
 
 	it('does not synchronize with another blockchain that has invalid genesis block', ()=>{
-		const genesisBlock = Block.createGenesisFrom('0', 'data');
-		const invalidGenesisBlock = Block.createGenesisFrom('1', 'data');
+		const genesisBlock = Block.createGenesisFrom({timestamp:'0', transactions:'irrelevant-data', nonce:0});
+		const invalidGenesisBlock = Block.createGenesisFrom({timestamp:'1', transactions:'irrelevant-data', nonce:0});
 		const blockChain = BlockChain.create([genesisBlock]);
-		const anotherBlockChain = BlockChain.create([invalidGenesisBlock, Block.createFrom('1', invalidGenesisBlock, 'more data')]);
+		const anotherBlockChain = BlockChain.create([invalidGenesisBlock, Block.createFrom({timestamp:'0', previousBlockHash:invalidGenesisBlock.hash, transactions:'irrelevant-data', nonce:0})]);
 
 		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain)
 
@@ -68,12 +68,12 @@ describe('The Blockchain', ()=>{
 	})
 
 	it('does not synchronize with another blockchain that has a corrupted block', ()=>{
-		const genesisBlock = Block.createGenesisFrom('0', 'data');
-		const secondBlock = Block.createFrom('1', genesisBlock, 'more data');
+		const genesisBlock = Block.createGenesisFrom({timestamp:'0', transactions:'irrelevant-data', nonce:0});
+		const secondBlock = Block.createFrom({timestamp:'0', previousBlockHash:genesisBlock.hash, transactions:'irrelevant-data', nonce:0});
 		const blockChain = BlockChain.create([genesisBlock, secondBlock]);
 		const corruptedBlock = secondBlock.clone();
-		(corruptedBlock as any).data = 'corrupted data';
-		const thirdBlock = Block.createFrom('1', secondBlock, 'more data...');
+		(corruptedBlock as any).transactions = 'corrupted transaction';
+		const thirdBlock = Block.createFrom({timestamp:'0', previousBlockHash:secondBlock.hash, transactions:'irrelevant-data', nonce:0});
 		const anotherBlockChain = BlockChain.create([genesisBlock, corruptedBlock, thirdBlock]);
 
 		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain)
@@ -82,12 +82,12 @@ describe('The Blockchain', ()=>{
 	})
 
 	it('does not synchronize with another blockchain that has corrupted previous hash in some block', ()=>{
-		const genesisBlock = Block.createGenesisFrom('0', 'data');
-		const secondBlock = Block.createFrom('1', genesisBlock, 'more data');
+		const genesisBlock = Block.createGenesisFrom({timestamp:'0', transactions:'irrelevant-data', nonce:0});
+		const secondBlock = Block.createFrom({timestamp:'0', previousBlockHash:genesisBlock.hash, transactions:'irrelevant-data', nonce:0});
 		const blockChain = BlockChain.create([genesisBlock, secondBlock]);
 		const blockWithCorruptedPreviousHash = secondBlock.clone();
 		(blockWithCorruptedPreviousHash as any).previousBlockHash = 'corrupted previous hash';
-		const thirdBlock = Block.createFrom('1', secondBlock, 'more data...');
+		const thirdBlock = Block.createFrom({timestamp:'0', previousBlockHash:secondBlock.hash, transactions:'irrelevant-data', nonce:0});
 		const anotherBlockChain = BlockChain.create([genesisBlock, blockWithCorruptedPreviousHash, thirdBlock]);
 
 		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain)
