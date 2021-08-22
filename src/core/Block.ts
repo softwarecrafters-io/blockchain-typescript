@@ -52,10 +52,23 @@ export class Block{
 		return SHA256(`${timestamp}${previousBlockHash}${transactions}${nonce}`).toString()
 	}
 
-	hasValidHash(){
+	hasValidHash(difficultyThreshold = 0){
+		return this.isValidHashBasedOnDifficultyThreshold(difficultyThreshold) && this.isUnmanipulatedHash();
+	}
+
+	private isUnmanipulatedHash(){
 		const {timestamp, previousBlockHash, transactions, nonce} = this;
 		const validHash = Block.generateHash( {timestamp, previousBlockHash, transactions, nonce}).toString()
-		return this.hash === validHash;
+		return this.hash === validHash
+	}
+
+	private isValidHashBasedOnDifficultyThreshold(difficultyThreshold:number){
+		if(difficultyThreshold === 0){
+			return true;
+		}
+		const beginningOfHash = this.hash.substring(0, difficultyThreshold);
+		const patternAdjustedToDifficulty = '0'.repeat(difficultyThreshold);
+		return beginningOfHash === patternAdjustedToDifficulty;
 	}
 
 	isGenesis(){

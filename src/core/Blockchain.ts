@@ -1,31 +1,34 @@
 import { Block } from './Block';
 
 export class BlockChain{
-	private constructor(private readonly blocks: ReadonlyArray<Block>) {}
+	private constructor(private readonly blocks: ReadonlyArray<Block>, private readonly difficultyThreshold:number) {}
 
-	static create(blocks: ReadonlyArray<Block>){
+	static create(blocks: ReadonlyArray<Block>, difficultyThreshold:number){
 		if(blocks.length < 1){
 			throw 'an empty list of blocks is not allowed';
 		}
 		if(!blocks[0].isGenesis()){
 			throw 'a list without a valid genesis block is not allowed'
 		}
-		return new BlockChain(blocks)
+		return new BlockChain(blocks, difficultyThreshold)
 	}
 
-	static createFrom(timestamp:string){
-		return new BlockChain([Block.createGenesisFrom({timestamp:timestamp, transactions:'irrelevant-data', nonce:0})])
+	static createFrom(timestamp:string, difficultyThreshold:number){
+		return BlockChain.create([Block.createGenesisFrom({timestamp:timestamp, transactions:'irrelevant-data', nonce:0} )], difficultyThreshold)
 	}
 
 	static createFromAnother(blockChain: BlockChain){
-		return new BlockChain(blockChain.blocks)
+		return BlockChain.create(blockChain.blocks, blockChain.difficultyThreshold)
 	}
 
 	concatBlock(block:Block){
 		if(!block.isPreviousBlock(this.getLastBlock())){
 			throw 'a block with invalid previous hash is not allowed'
 		}
-		return BlockChain.create(this.blocks.concat(block))
+		if(!block.hasValidHash(this.difficultyThreshold)){
+			throw 'a block with invalid hash is not allowed'
+		}
+		return BlockChain.create(this.blocks.concat(block), this.difficultyThreshold)
 	}
 
 	synchronize(blockChain:BlockChain){

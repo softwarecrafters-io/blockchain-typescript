@@ -25,8 +25,9 @@ describe('The proof of work service', ()=>{
 	it('mines a candidate block with a difficulty threshold of three', ()=>{
 		const block = Block.createFrom({timestamp:'0', previousBlockHash: 'irrelevant-hash', transactions:'irrelevant-data', nonce:0});
 		const proofOfWorkService = ProofOfWorkService.create(3);
-
+		console.time('mining')
 		const minedBlock = proofOfWorkService.mineBlock(block)
+		console.timeEnd('mining')
 		expect(minedBlock.hash.substring(0,3)).toBe('000')
-	})
+	});
 })

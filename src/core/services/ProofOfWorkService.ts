@@ -15,13 +15,7 @@ export class ProofOfWorkService{
 		do{
 			nonce++;
 			candidateBlock = Block.createFromCandidate({ candidateBlock, timestamp, nonce })
-		} while(!this.containsNumberZerosRequiredAtTheBeginningOf(candidateBlock.hash))
+		} while(!candidateBlock.hasValidHash(this.difficultyThreshold))
 		return candidateBlock;
-	}
-
-	private containsNumberZerosRequiredAtTheBeginningOf(hash:string){
-		const beginningOfHash = hash.substring(0, this.difficultyThreshold);
-		const patternAdjustedToDifficulty = '0'.repeat(this.difficultyThreshold);
-		return beginningOfHash === patternAdjustedToDifficulty;
 	}
 }
