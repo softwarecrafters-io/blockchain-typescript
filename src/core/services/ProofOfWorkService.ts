@@ -10,13 +10,13 @@ export class ProofOfWorkService {
 		return new ProofOfWorkService(difficultyThreshold);
 	}
 
-	mineBlock = (candidateBlock: Block, nonce = 0) => {
+	mineBlock(candidateBlock: Block, nonce = 0) {
 		do {
-			const timestamp = Date.now().toString();
+			const timestamp = Date.now();
+			const difficulty = this.difficultyThreshold;
 			nonce++;
-			candidateBlock = Block.createFromCandidate({ candidateBlock, timestamp, nonce });
+			candidateBlock = Block.createFromCandidate({ candidateBlock, timestamp, nonce, difficulty });
 		} while (!candidateBlock.hasValidHash(this.difficultyThreshold));
-		console.log('nonce: ', nonce);
 		return candidateBlock;
-	};
+	}
 }

@@ -3,13 +3,13 @@ import { Block } from '../../core/Block';
 describe('The Block', () => {
 	it('creates a genesis from timestamp and data', () => {
 		expect(
-			Block.createGenesisFrom({ timestamp: '0', transactions: 'irrelevant-data', nonce: 0 }).isGenesis()
+			Block.createGenesisFrom({ timestamp: 0, transactions: 'irrelevant-data', nonce: 0 }).isGenesis()
 		).toBeTruthy();
 	});
 
 	it('creates a new block with a valid SHA256 hash', () => {
 		const block = Block.createFrom({
-			timestamp: '0',
+			timestamp: 0,
 			previousBlockHash: 'irrelevant-hash',
 			transactions: 'irrelevant-data',
 			nonce: 0,
@@ -20,9 +20,9 @@ describe('The Block', () => {
 	});
 
 	it('creates a new block with a valid information', () => {
-		const genesisBlock = Block.createGenesisFrom({ timestamp: '0', transactions: 'irrelevant-data', nonce: 0 });
+		const genesisBlock = Block.createGenesisFrom({ timestamp: 0, transactions: 'irrelevant-data', nonce: 0 });
 		const block = Block.createFrom({
-			timestamp: '0',
+			timestamp: 0,
 			previousBlockHash: genesisBlock.hash,
 			transactions: 'irrelevant-data',
 			nonce: 0,
@@ -34,9 +34,9 @@ describe('The Block', () => {
 	});
 
 	it('evaluates if the block has a valid hash', () => {
-		const genesisBlock = Block.createGenesisFrom({ timestamp: '0', transactions: 'irrelevant-data', nonce: 0 });
+		const genesisBlock = Block.createGenesisFrom({ timestamp: 0, transactions: 'irrelevant-data', nonce: 0 });
 		const block = Block.createFrom({
-			timestamp: '0',
+			timestamp: 0,
 			previousBlockHash: genesisBlock.hash,
 			transactions: 'irrelevant-data',
 			nonce: 0,
@@ -46,9 +46,9 @@ describe('The Block', () => {
 	});
 
 	it('a manipulated block has an invalid hash', () => {
-		const genesisBlock = Block.createGenesisFrom({ timestamp: '0', transactions: 'irrelevant-data', nonce: 0 });
+		const genesisBlock = Block.createGenesisFrom({ timestamp: 0, transactions: 'irrelevant-data', nonce: 0 });
 		const manipulatedBlock = Block.createFrom({
-			timestamp: '0',
+			timestamp: 0,
 			previousBlockHash: genesisBlock.hash,
 			transactions: 'irrelevant-data',
 			nonce: 0,

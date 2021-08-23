@@ -1,5 +1,5 @@
-import { ProofOfWorkService } from '../../../core/services/ProofOfWorkService';
 import { Block } from '../../../core/Block';
+import { ProofOfWorkService } from '../../../core/services/ProofOfWorkService';
 
 describe('The proof of work service', () => {
 	it('does not allow negative difficulty threshold', () => {
@@ -8,7 +8,7 @@ describe('The proof of work service', () => {
 
 	it.concurrent('mines a candidate block with a difficulty threshold of one', () => {
 		const block = Block.createFrom({
-			timestamp: '0',
+			timestamp: 0,
 			previousBlockHash: 'irrelevant-hash',
 			transactions: 'irrelevant-data',
 			nonce: 0,
@@ -21,7 +21,7 @@ describe('The proof of work service', () => {
 
 	it.concurrent('mines a candidate block with a difficulty threshold of two', () => {
 		const block = Block.createFrom({
-			timestamp: '0',
+			timestamp: 0,
 			previousBlockHash: 'irrelevant-hash',
 			transactions: 'irrelevant-data',
 			nonce: 0,
@@ -34,7 +34,7 @@ describe('The proof of work service', () => {
 
 	it.concurrent('mines a candidate block with a difficulty threshold of three', () => {
 		const block = Block.createFrom({
-			timestamp: '0',
+			timestamp: 0,
 			previousBlockHash: 'irrelevant-hash',
 			transactions: 'irrelevant-data',
 			nonce: 0,
@@ -44,9 +44,9 @@ describe('The proof of work service', () => {
 		expect(minedBlock.hash.substring(0, 3)).toBe('000');
 	});
 
-	xit.concurrent('improves concurrent the mining of a candidate block by increasing nonce number', () => {
+	xit('improves concurrent the mining of a candidate block by increasing nonce number', () => {
 		const block = Block.createFrom({
-			timestamp: '0',
+			timestamp: 0,
 			previousBlockHash: 'irrelevant-hash',
 			transactions: 'irrelevant-data',
 			nonce: 0,
