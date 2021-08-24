@@ -1,7 +1,7 @@
 import { Block } from './Block';
 
 export class BlockChain {
-	private constructor(private readonly blocks: ReadonlyArray<Block>) {}
+	private constructor(private blocks: ReadonlyArray<Block>) {}
 
 	static create(blocks: ReadonlyArray<Block>) {
 		if (blocks.length < 1) {
@@ -30,15 +30,14 @@ export class BlockChain {
 		if (!block.hasValidHash(difficultyThreshold)) {
 			throw 'a block with invalid hash is not allowed';
 		}
-		return BlockChain.create(this.blocks.concat(block));
+		return (this.blocks = this.blocks.concat(block));
 	}
 
 	synchronize(blockChain: BlockChain) {
-		const shallKeepCurrent = this.length() >= blockChain.length() || !this.hasIntegrity(blockChain);
-		if (shallKeepCurrent) {
-			return BlockChain.createFromAnother(this);
+		const shallKeepCurrentBlocks = this.length() >= blockChain.length() || !this.hasIntegrity(blockChain);
+		if (!shallKeepCurrentBlocks) {
+			this.blocks = blockChain.blocks;
 		}
-		return BlockChain.createFromAnother(blockChain);
 	}
 
 	private hasIntegrity(blockChain: BlockChain) {

@@ -1,6 +1,7 @@
 import { Block } from '../../core/Block';
 import { BlockChain } from '../../core/Blockchain';
 import { ProofOfWorkService } from '../../core/services/ProofOfWorkService';
+import { DifficultyThresholdService, MiningRateRange } from '../../core/services/DifficultyThresholdService';
 
 const context = describe;
 
@@ -33,9 +34,9 @@ describe('The Blockchain', () => {
 			}),
 		]);
 
-		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain);
+		blockChain.synchronize(anotherBlockChain);
 
-		expect(blockChainSynchronized).toEqual(anotherBlockChain);
+		expect(blockChain.getAllBlocks()).toEqual(anotherBlockChain.getAllBlocks());
 	});
 
 	it('does not synchronize with another blockchain that has less blocks', () => {
@@ -50,10 +51,9 @@ describe('The Blockchain', () => {
 			}),
 		]);
 		const anotherBlockChain = BlockChain.create([genesisBlock]);
+		blockChain.synchronize(anotherBlockChain);
 
-		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain);
-
-		expect(blockChainSynchronized).toEqual(blockChain);
+		expect(blockChain.length()).toBe(2);
 	});
 
 	it('does not synchronize with another blockchain that has invalid genesis block', () => {
@@ -70,9 +70,9 @@ describe('The Blockchain', () => {
 			}),
 		]);
 
-		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain);
+		blockChain.synchronize(anotherBlockChain);
 
-		expect(blockChainSynchronized).toEqual(blockChain);
+		expect(blockChain.length()).toBe(1);
 	});
 
 	it('does not synchronize with another blockchain that has a corrupted block', () => {
@@ -94,9 +94,9 @@ describe('The Blockchain', () => {
 		});
 		const anotherBlockChain = BlockChain.create([genesisBlock, corruptedBlock, thirdBlock]);
 
-		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain);
+		blockChain.synchronize(anotherBlockChain);
 
-		expect(blockChainSynchronized).toEqual(blockChain);
+		expect(blockChain.length()).toBe(2);
 	});
 
 	it('does not synchronize with another blockchain that has corrupted previous hash in some block', () => {
@@ -118,9 +118,9 @@ describe('The Blockchain', () => {
 		});
 		const anotherBlockChain = BlockChain.create([genesisBlock, blockWithCorruptedPreviousHash, thirdBlock]);
 
-		const blockChainSynchronized = blockChain.synchronize(anotherBlockChain);
+		blockChain.synchronize(anotherBlockChain);
 
-		expect(blockChainSynchronized).toEqual(blockChain);
+		expect(blockChain.length()).toBe(2);
 	});
 
 	context('when difficulty threshold is zero', () => {
@@ -133,9 +133,9 @@ describe('The Blockchain', () => {
 				nonce: 0,
 			});
 
-			const newBlockChain = blockChain.concatBlock(block);
+			blockChain.concatBlock(block);
 
-			expect(newBlockChain.getLastBlock().isEquals(block)).toBeTruthy();
+			expect(blockChain.getLastBlock().isEquals(block)).toBeTruthy();
 		});
 
 		it('does not allow concatenate a block if it does not link to the previous block', () => {
@@ -163,8 +163,42 @@ describe('The Blockchain', () => {
 				nonce: 0,
 			});
 			const minedBlock = ProofOfWorkService.create(difficultyThreshold).mineBlock(candidateBlock);
+			blockChain.concatBlock(minedBlock, difficultyThreshold);
+			expect(blockChain.getLastBlock().isEquals(minedBlock)).toBeTruthy();
+		});
 
-			expect(blockChain.concatBlock(minedBlock, difficultyThreshold).getLastBlock().isEquals(minedBlock)).toBeTruthy();
+		it('does not allow concatenate a candidate block', () => {
+			const difficultyThreshold = 1;
+			const blockChain = BlockChain.createFrom(0);
+			const candidateBlock = Block.createFrom({
+				timestamp: 1,
+				previousBlockHash: blockChain.getLastBlock().hash,
+				transactions: 'irrelevant-data',
+				nonce: 0,
+			});
+
+			expect(() => blockChain.concatBlock(candidateBlock, difficultyThreshold)).toThrow();
+		});
+	});
+
+	context('when difficulty threshold is automatic', () => {
+		xit('concatenates a new mined block that includes previous hash', () => {
+			const blockChain = BlockChain.createFrom(Date.now());
+			const candidateBlock = Block.createFrom({
+				timestamp: Date.now(),
+				previousBlockHash: blockChain.getLastBlock().hash,
+				transactions: 'irrelevant-data',
+				nonce: 0,
+			});
+			const initialDifficulty = 0;
+			const minedBlock = ProofOfWorkService.create(initialDifficulty).mineBlock(candidateBlock);
+			blockChain.concatBlock(minedBlock, initialDifficulty);
+
+			const difficultyThresholdService = DifficultyThresholdService.create(MiningRateRange.create(3000, 5000));
+			const newDifficult = difficultyThresholdService.calculate(blockChain.getLastBlock(), minedBlock);
+			console.log(newDifficult);
+			blockChain.concatBlock(minedBlock, 0);
+			expect(blockChain.getLastBlock().isEquals(minedBlock)).toBeTruthy();
 		});
 
 		it('does not allow concatenate a candidate block', () => {

@@ -28,9 +28,13 @@ describe('The Block', () => {
 			nonce: 0,
 		});
 
-		expect(block.toString()).toBe(
-			'Block - timestamp: 0 nonce: 0 previousHash: 2070ec51d846b3c298ff989abc31c6cded5be390763263441ddf2c67597ba829 currentHash: 07adbffb5d6253b942baa6021a13e4f3026e999f3a9f4aa325adf7eab8107cb5 transactions: irrelevant-data'
-		);
+		expect(block.toString()).toBe(`Block 
+				timestamp: 0 
+				nonce: 0 
+				previousHash: 2070ec51d846b3c298ff989abc31c6cded5be390763263441ddf2c67597ba829 
+				currentHash: 07adbffb5d6253b942baa6021a13e4f3026e999f3a9f4aa325adf7eab8107cb5 
+				transactions: irrelevant-data
+				difficulty: 0`);
 	});
 
 	it('evaluates if the block has a valid hash', () => {

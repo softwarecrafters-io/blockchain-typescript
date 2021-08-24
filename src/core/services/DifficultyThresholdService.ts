@@ -13,7 +13,7 @@ export class DifficultyThresholdService {
 		if (timeDifferenceBetweenBlocks < this.miningRateRange.min) {
 			return currentDifficulty + 1;
 		}
-		if (timeDifferenceBetweenBlocks > this.miningRateRange.max) {
+		if (currentDifficulty > 0 && timeDifferenceBetweenBlocks > this.miningRateRange.max) {
 			return currentDifficulty - 1;
 		}
 		return currentDifficulty;

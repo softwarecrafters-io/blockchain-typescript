@@ -33,17 +33,17 @@ describe('The difficulty threshold service', () => {
 
 		expect(currentDifficulty).toBe(1);
 	});
-});
 
-function createBlockFrom(timestamp: number, difficulty?: number) {
-	return Block.createFrom({
-		timestamp: timestamp,
-		previousBlockHash: 'irrelevant-hash',
-		transactions: 'irrelevant-data',
-		nonce: 0,
-		difficulty: difficulty,
-	});
-}
+	function createBlockFrom(timestamp: number, difficulty?: number) {
+		return Block.createFrom({
+			timestamp: timestamp,
+			previousBlockHash: 'irrelevant-hash',
+			transactions: 'irrelevant-data',
+			nonce: 0,
+			difficulty: difficulty,
+		});
+	}
+});
 
 describe('The mining rate range', () => {
 	it('does not allow negative minimum number', () => {

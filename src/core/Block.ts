@@ -91,12 +91,18 @@ export class Block {
 		return this.toString() === block.toString();
 	}
 
-	toString() {
-		return `Block - timestamp: ${this.timestamp} nonce: ${this.nonce} previousHash: ${this.previousBlockHash} currentHash: ${this.hash} transactions: ${this.transactions}`;
-	}
-
 	clone() {
 		const { timestamp, previousBlockHash, transactions, nonce, hash } = this;
 		return new Block({ timestamp, previousBlockHash, transactions, nonce, hash });
+	}
+
+	toString() {
+		return `Block 
+				timestamp: ${this.timestamp} 
+				nonce: ${this.nonce} 
+				previousHash: ${this.previousBlockHash} 
+				currentHash: ${this.hash} 
+				transactions: ${this.transactions}
+				difficulty: ${this.difficulty}`;
 	}
 }
