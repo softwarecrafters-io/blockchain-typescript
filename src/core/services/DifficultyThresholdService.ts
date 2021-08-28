@@ -1,15 +1,21 @@
 import { Block } from '../Block';
+import { BlockChain } from '../Blockchain';
 
 export class DifficultyThresholdService {
-	private constructor(private readonly miningRateRange: MiningRateRange) {}
+	private constructor(private readonly miningRateRange: MiningRateRange, private readonly numberOfBlocks: number) {}
 
-	static create(miningRateRange: MiningRateRange) {
-		return new DifficultyThresholdService(miningRateRange);
+	static create(miningRateRange: MiningRateRange, numberOfBlocks: number) {
+		return new DifficultyThresholdService(miningRateRange, numberOfBlocks);
 	}
 
-	calculate(previousBlock: Block, currentBlock: Block) {
-		const currentDifficulty = currentBlock.difficulty;
-		const timeDifferenceBetweenBlocks = currentBlock.timestamp - previousBlock.timestamp;
+	calculate(blockchain: BlockChain) {
+		const currentDifficulty = blockchain.getLastBlock().difficulty;
+		if (blockchain.length() < this.numberOfBlocks) {
+			return currentDifficulty;
+		}
+		const lastBlocks = blockchain.getLastBlocks(this.numberOfBlocks);
+		const timeDifferenceBetweenBlocks = this.calculateTimeDifferenceBetweenBlocks(lastBlocks);
+		console.log(timeDifferenceBetweenBlocks);
 		if (timeDifferenceBetweenBlocks < this.miningRateRange.min) {
 			return currentDifficulty + 1;
 		}
@@ -17,6 +23,10 @@ export class DifficultyThresholdService {
 			return currentDifficulty - 1;
 		}
 		return currentDifficulty;
+	}
+
+	private calculateTimeDifferenceBetweenBlocks(blocks: ReadonlyArray<Block>) {
+		return blocks.map((b) => b.timestamp).reduce((previous, current) => current - previous);
 	}
 }
 

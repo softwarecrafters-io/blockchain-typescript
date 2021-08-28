@@ -60,6 +60,10 @@ export class BlockChain {
 		return this.blocks[this.blocks.length - 1];
 	}
 
+	getLastBlocks(n: number) {
+		return this.blocks.slice(-n);
+	}
+
 	getBlocksWithoutGenesis() {
 		const [_, ...remainBlocks] = this.blocks;
 		return remainBlocks;
