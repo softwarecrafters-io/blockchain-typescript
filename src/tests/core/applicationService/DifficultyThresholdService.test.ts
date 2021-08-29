@@ -1,7 +1,10 @@
-import { DifficultyThresholdService, MiningRateRange } from '../../../core/services/DifficultyThresholdService';
+import {
+	DifficultyThresholdService,
+	MiningRateRange,
+} from '../../../core/applicationService/DifficultyThresholdService';
 import { Block } from '../../../core/Block';
 import { BlockChain } from '../../../core/Blockchain';
-import { ProofOfWorkService } from '../../../core/services/ProofOfWorkService';
+import { ProofOfWorkService } from '../../../core/applicationService/ProofOfWorkService';
 const context = describe;
 
 describe('The difficulty threshold service', () => {
@@ -64,7 +67,6 @@ describe('The difficulty threshold service', () => {
 			});
 			const minedBlock = ProofOfWorkService.create(previousDifficulty).mineBlock(candidateBlock);
 			blockchain.concatBlock(minedBlock, previousDifficulty);
-			console.log(blockchain.length());
 			const difficultyThresholdService = DifficultyThresholdService.create(MiningRateRange.create(30000, 50000), 2);
 			const newDifficult = difficultyThresholdService.calculate(blockchain);
 

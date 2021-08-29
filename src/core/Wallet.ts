@@ -1,4 +1,5 @@
 import { AsymmetricKeyService } from './services/AsymmetricKeyService';
+import { HashGeneratorService } from './services/HashGeneratorService';
 
 export class Wallet {
 	constructor(private balance: number, private readonly privateKey: string, readonly publicKey: string) {}
@@ -8,6 +9,11 @@ export class Wallet {
 		const { privateKey, publicKey } = AsymmetricKeyService.generateKeyPair();
 
 		return new Wallet(initialBalance, privateKey, publicKey);
+	}
+
+	sign(transactionData) {
+		const hash = HashGeneratorService.generateSHA256(transactionData);
+		return AsymmetricKeyService.signHash(this.privateKey, hash);
 	}
 
 	toString() {

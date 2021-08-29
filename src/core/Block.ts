@@ -1,4 +1,4 @@
-import { HashGenerator } from './HashGenerator';
+import { HashGeneratorService } from './services/HashGeneratorService';
 
 export type BlockProperties = {
 	timestamp: number;
@@ -57,14 +57,14 @@ export class Block {
 
 	private static generateHash(properties: NewBlockProperties) {
 		const { timestamp, previousBlockHash, transactions, nonce } = properties;
-		return HashGenerator.generateSHA256(timestamp, previousBlockHash, transactions, nonce);
+		return HashGeneratorService.generateSHA256(timestamp, previousBlockHash, transactions, nonce);
 	}
 
 	hasValidHash(difficultyThreshold = 0) {
-		return this.isValidHashBasedOnDifficultyThreshold(difficultyThreshold) && this.isUnmanipulatedHash();
+		return this.isValidHashBasedOnDifficultyThreshold(difficultyThreshold) && this.isValidHash();
 	}
 
-	private isUnmanipulatedHash() {
+	private isValidHash() {
 		const { timestamp, previousBlockHash, transactions, nonce } = this;
 		const validHash = Block.generateHash({ timestamp, previousBlockHash, transactions, nonce }).toString();
 		return this.hash === validHash;

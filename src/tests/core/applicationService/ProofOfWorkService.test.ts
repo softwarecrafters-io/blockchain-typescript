@@ -1,5 +1,5 @@
 import { Block } from '../../../core/Block';
-import { ProofOfWorkService } from '../../../core/services/ProofOfWorkService';
+import { ProofOfWorkService } from '../../../core/applicationService/ProofOfWorkService';
 
 describe('The proof of work service', () => {
 	it('does not allow negative difficulty threshold', () => {

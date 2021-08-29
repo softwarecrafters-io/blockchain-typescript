@@ -1,6 +1,6 @@
 import { Block } from '../../core/Block';
 import { BlockChain } from '../../core/Blockchain';
-import { ProofOfWorkService } from '../../core/services/ProofOfWorkService';
+import { ProofOfWorkService } from '../../core/applicationService/ProofOfWorkService';
 
 const context = describe;
 
