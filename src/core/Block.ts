@@ -1,4 +1,4 @@
-import { CryptoUtils } from './CrytoUtils';
+import { HashGenerator } from './HashGenerator';
 
 export type BlockProperties = {
 	timestamp: number;
@@ -57,7 +57,7 @@ export class Block {
 
 	private static generateHash(properties: NewBlockProperties) {
 		const { timestamp, previousBlockHash, transactions, nonce } = properties;
-		return CryptoUtils.generateHashSHA256(timestamp, previousBlockHash, transactions, nonce);
+		return HashGenerator.generateSHA256(timestamp, previousBlockHash, transactions, nonce);
 	}
 
 	hasValidHash(difficultyThreshold = 0) {

@@ -15,7 +15,6 @@ export class DifficultyThresholdService {
 		}
 		const lastBlocks = blockchain.getLastBlocks(this.numberOfBlocks);
 		const timeDifferenceBetweenBlocks = this.calculateTimeDifferenceBetweenBlocks(lastBlocks);
-		console.log(timeDifferenceBetweenBlocks);
 		if (timeDifferenceBetweenBlocks < this.miningRateRange.min) {
 			return currentDifficulty + 1;
 		}
