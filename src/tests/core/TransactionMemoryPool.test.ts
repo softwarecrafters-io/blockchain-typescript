@@ -1,9 +1,9 @@
-import { Transaction } from '../../core/Transaction';
 import { TransactionMemoryPool } from '../../core/TransactionMemoryPool';
+import { TransactionFactory } from '../TestFactory';
 
 describe('The transaction memory pool', () => {
 	it('adds a given unconfirmed transaction', () => {
-		const transaction = Transaction.create();
+		const transaction = TransactionFactory.createTransaction({});
 		const memoryPool = new TransactionMemoryPool();
 
 		memoryPool.addOrUpdate(transaction);
@@ -12,7 +12,7 @@ describe('The transaction memory pool', () => {
 	});
 
 	it('updates an existing unconfirmed transaction', () => {
-		const transaction = Transaction.create();
+		const transaction = TransactionFactory.createTransaction({});
 		const memoryPool = new TransactionMemoryPool();
 
 		memoryPool.addOrUpdate(transaction);
@@ -20,5 +20,14 @@ describe('The transaction memory pool', () => {
 
 		expect(memoryPool.getUnconfirmedTransactions()[0]).toEqual(transaction);
 		expect(memoryPool.getUnconfirmedTransactions().length).toBe(1);
+	});
+
+	it('removes all transactions', () => {
+		const transaction = TransactionFactory.createTransaction({});
+		const memoryPool = new TransactionMemoryPool();
+		memoryPool.addOrUpdate(transaction);
+		memoryPool.removeAll();
+
+		expect(memoryPool.getUnconfirmedTransactions().length).toEqual(0);
 	});
 });

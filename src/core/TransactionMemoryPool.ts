@@ -11,6 +11,10 @@ export class TransactionMemoryPool {
 			: this.unconfirmedTransactions.push(transaction);
 	}
 
+	removeAll() {
+		this.unconfirmedTransactions = [];
+	}
+
 	getUnconfirmedTransactions() {
 		return this.unconfirmedTransactions;
 	}
